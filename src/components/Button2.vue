@@ -1,6 +1,6 @@
 <template>
     <div class="button">
-        <button v-on:click="do_action(data.action,data.action_data)">{{ data.name }}</button>
+        <button v-on:click="do_action(data.action,data.action_data)">{{ text}}</button>
     </div>
 </template>
 
@@ -11,13 +11,13 @@ export default {
     props: {
         data: {
             required: true
-        }
+        }   
     },
     methods: {
         do_action(action,data){
             call_action(action,data)
         }
     },
-    name: "Button"
+    name: "Button2"
 }
 </script>
