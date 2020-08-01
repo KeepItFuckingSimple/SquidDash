@@ -1,11 +1,11 @@
 <template>
     <div class="button">
-        <button v-on:click="do_action(data.action,data.action_data)">{{ data.name }}</button>
+        <button v-on:click="do_action(data.module,data.module_data)">{{ data.name }}</button>
     </div>
 </template>
 
 <script>
-import { call_action } from '../actions/actions.js';
+import { call_module } from '../modules/modules.js';
 
 export default {
     props: {
@@ -14,10 +14,11 @@ export default {
         }
     },
     methods: {
-        do_action(action,data){
-            call_action(action,data)
+        do_action(module,data){
+            call_module(module,data)
         }
     },
     name: "Button"
 }
+
 </script>

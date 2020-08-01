@@ -23,7 +23,7 @@ export default {
   methods: {
     addTile(data){
       this.content.tiles.push(data)
-      storage("content",this.content)
+      storage.set("content",this.content)
     }
   } 
 }

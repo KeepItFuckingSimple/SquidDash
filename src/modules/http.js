@@ -6,8 +6,8 @@ export function action(data){
 }
 
 export const infos = {
-    name: "HTTP Official Action",
-    variants: {
+    name: "HTTP Official Module",
+    actions: {
             "GET":{
                 identifiers: {
                     method: "GET"
