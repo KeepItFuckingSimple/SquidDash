@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import storage from  'local-storage';
 export default {
   data(){
     return {
@@ -13,10 +14,16 @@ export default {
       }
     }
   },
+  created() {
+    var stored_content = storage.get("content");
+    if (stored_content != null){
+      this.content = stored_content
+    }
+  },
   methods: {
     addTile(data){
       this.content.tiles.push(data)
-
+      storage("content",this.content)
     }
   } 
 }
