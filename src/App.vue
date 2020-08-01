@@ -1,19 +1,61 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>{{ text }} </h1>
+    <div class="compo" v-for="tile in content.tiles" v-bind:key="tile.name">
+        <component :is="tiles[tile.type]" :data="tile.data"/><br>
+
+    </div>
+    <button v-on:click=addComponent()>+</button>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import Button from './components/Button'
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  data (){
+    return {
+      text: "SquidDash",
+      tiles:{
+        'Button': Button
+
+      },
+      content: {
+        tiles: [
+            {
+              type: "Button",
+              data: {
+                action: "http",
+                action_data: {
+                  method: "GET",
+                  url:"https://montest.requestcatcher.com/Bouton1"
+                },
+                name: "Bouton1"
+              }
+            },
+                        {
+              type: "Button",
+              data: {
+                action: "http",
+                action_data: {
+                  method: "GET",
+                  url:"https://montest.requestcatcher.com/Bouton2"
+                },
+                name: "Bouton2"
+              }
+            }
+          ]
+      }
+    }
+  },
+  methods: {
+    addComponent() {
+      console.log("Add component")
+      this.content.push("Button")
+    }
   }
 }
+
 </script>
 
 <style lang="scss">
