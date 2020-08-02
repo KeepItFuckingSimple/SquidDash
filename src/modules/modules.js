@@ -12,7 +12,6 @@ export function get_all_modules(){
 }
 
 export function get_module_info(module){
-    console.log(module)
     return modules[module].infos
 }
 

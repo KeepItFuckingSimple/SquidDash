@@ -6,7 +6,10 @@
         <component :is="tiles[tile.type]" :data="tile.data"/><br>
 
     </div>
-    <button v-on:click=addComponent()>+</button>
+    <br>
+    <button v-on:click=addComponent()>+ Add tile</button>
+    <br><br><br><br>
+    <button @click=goSettings>Settings</button>
 
   </div>
 </template>
@@ -26,6 +29,9 @@ export default {
         this.$router.push('add')
 
 
+    },
+    goSettings(){
+      this.$router.push("settings")
     }
   },
 }

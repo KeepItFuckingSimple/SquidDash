@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 export function action(data){
-    console.log("DO HTTP")
     axios.get(data.url)
 }
 

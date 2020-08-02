@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="create">
 
     <h1>Add a tile</h1>
 
@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
+#create {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
