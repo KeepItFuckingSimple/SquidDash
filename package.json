@@ -11,9 +11,12 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
     "local-storage": "^2.0.0",
+    "mqtt": "^4.1.0",
+    "paho-mqtt": "^1.1.0",
     "sweetalert2": "^9.17.1",
     "vue": "^2.6.11",
     "vue-json-viewer": "^2.2.14",
+    "vue-mqtt": "^2.0.3",
     "vue-router": "^3.3.4"
   },
   "devDependencies": {

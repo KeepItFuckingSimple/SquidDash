@@ -10,7 +10,6 @@
     <button v-on:click=addComponent()>+ Add tile</button>
     <br><br><br><br>
     <button @click=goSettings>Settings</button>
-
   </div>
 </template>
 

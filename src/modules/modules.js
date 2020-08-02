@@ -1,6 +1,8 @@
 import * as http from './http';
+import * as mqtt from './mqtt'
 const modules = {
-    'http': http
+    'http': http,
+    'mqtt': mqtt
 }
 
 export function call_module(module,data){

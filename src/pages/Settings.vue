@@ -5,9 +5,9 @@
         <br><br>
 
         <button @click="exported = true" >Export data</button>
-
         <br>
         <br>
+        <button @click="sendConfig">Send my config</button><button @click="receiveConfig">Receive config</button>
         <br>
         <br>
         <br>
@@ -16,7 +16,7 @@
   :value="content"
    theme="my-awesome-json-theme"
   copyable
-  expanded="true"
+  expanded
   ></json-viewer>
     </div>
 </template>
@@ -24,6 +24,8 @@
 import ls from 'local-storage'
 import JsonViewer from 'vue-json-viewer'
 import Swal from 'sweetalert2'
+var mqtt = require('mqtt')
+
 
 function isJson(item) {
     item = typeof item !== "string"
@@ -48,7 +50,9 @@ export default {
     data (){
         return {
             content: ls("content"),
-            exported: false
+            exported: false,
+            code: 'code',
+            
         }
     },
     components: {
@@ -78,6 +82,46 @@ export default {
                 this.$router.push("/")
             }
             }
+        },
+        sendConfig(){
+            var client  = mqtt.connect('tcp://broker.hivemq.com:8000/mqtt')
+            client.on('connect', async function () {
+                const { value: code } = await Swal.fire({
+                title: 'Enter code : ',
+                input: 'text',
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    if (!value) {
+                    return 'You need to write something!'
+                    }
+                }
+                })
+
+                if (code) {
+                    client.publish("squiddash/"+code,JSON.stringify(ls.get("content")))
+                }
+                    
+
+            })
+            console.log("Sended")
+        },
+        receiveConfig(){
+            var code = Date.now().toString().substring(8,13)
+            var client  = mqtt.connect('tcp://broker.hivemq.com:8000/mqtt')
+            client.on('connect', function () {
+                client.subscribe("squiddash/"+code)
+            }.bind(code))
+            client.on('message', function (topic, message) {
+            // message is Buffer
+            var data = JSON.parse(message.toString())
+            ls.set("content",data)
+            this.$emit("updateContent")
+            this.$router.push("/")
+
+            }.bind(this))
+            Swal.fire('Your code : '+code.toString());
+
+
         }
     }
     
@@ -105,7 +149,11 @@ export default {
     cursor: pointer;
     user-select: none;
   }
-  .jv-button { color: #49b3ff }
+  .jv-button { 
+      color: #fff;
+      font-weight: 900;
+      border: solid;
+    }
   .jv-key { color: #fff }
   .jv-item {
     &.jv-array { color: #fff }

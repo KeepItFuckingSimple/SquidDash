@@ -27,6 +27,8 @@ export default {
       if (stored_content != null){
         this.content = stored_content
       }
+      this.$mqtt.publish('testxxtest', 'message to Sub1')
+
     }
   } 
 }
