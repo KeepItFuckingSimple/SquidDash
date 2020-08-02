@@ -70,6 +70,11 @@ export default {
             if(isJson(text)){
                 ls.set("content",JSON.parse(text))
                 this.$emit("updateContent")
+                await Swal.fire({
+                icon: 'success',
+                title: 'Perfect',
+                text: 'Data successfuly imported',
+                })
                 this.$router.push("/")
             }
             }
