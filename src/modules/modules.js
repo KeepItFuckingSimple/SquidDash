@@ -5,8 +5,10 @@ const modules = {
     'mqtt': mqtt
 }
 
-export function call_module(module,data){
-    modules[module].action(data)
+export function call_module(event,data){
+    var module_name = data.events[event].selected_module
+    var module_data = data.events[event].action_data
+    modules[module_name].action(module_data)
 }
 
 export function get_all_modules(){

@@ -1,6 +1,6 @@
 <template>
     <div class="button">
-        <button v-on:click="do_action(data.module,data.module_data)">{{ data.name }}</button>
+        <button v-on:click="do_action('click')">{{ data.name }}</button>
     </div>
 </template>
 
@@ -14,11 +14,12 @@ export default {
         }
     },
     methods: {
-        do_action(module,data){
-            call_module(module,data)
+        do_action(event){
+            call_module(event,this.data)
         }
     },
-    name: "Button"
+    name: "Button",
+    events: ["click"]
 }
 
 </script>
