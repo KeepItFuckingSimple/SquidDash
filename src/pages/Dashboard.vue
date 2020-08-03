@@ -1,7 +1,8 @@
 <template>
   <div id="dashboard">
 
-    <h1>Squid Dash </h1>
+    <demo-component></demo-component>
+    
     <div class="compo" v-for="tile in this.content.tiles" v-bind:key="tile.name">
         <component :is="tiles[tile.type]" :data="tile.data"/><br>
 
@@ -14,7 +15,8 @@
 </template>
 
 <script>
-import {tiles} from "../components/components.js"
+import {tiles} from "../tiles/tiles.js"
+import DemoComponent from "./components/demo.vue"
 export default {
   name: 'Dashboard',
   data (){
@@ -33,6 +35,9 @@ export default {
       this.$router.push("settings")
     }
   },
+  components: {
+    DemoComponent
+  }
 }
 
 </script>

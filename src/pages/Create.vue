@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import {tiles} from "../components/components.js"
+import {tiles} from "../tiles/tiles.js"
 import {get_all_modules,get_module_info} from "../modules/modules.js"
 export default {
   name: 'Create',
