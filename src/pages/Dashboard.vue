@@ -11,12 +11,15 @@
     <button v-on:click=addComponent()>+ Add tile</button>
     <br><br><br><br>
     <button @click=goSettings>Settings</button>
+    <bottombar @add_tile="addComponent()"></bottombar>
+
   </div>
 </template>
 
 <script>
 import {tiles} from "../tiles/tiles.js"
 import DemoComponent from "./components/demo.vue"
+import Bottombar from "./components/bottom_bar.vue"
 export default {
   name: 'Dashboard',
   data (){
@@ -36,7 +39,8 @@ export default {
     }
   },
   components: {
-    DemoComponent
+    DemoComponent,
+    Bottombar
   }
 }
 
