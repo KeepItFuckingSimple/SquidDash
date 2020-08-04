@@ -102,8 +102,17 @@ export default {
       if (this.tile_name.length == 0){
         this.errors.push("Name should not be blank")
       }
+      if (this.selected_tile == 0){
+        this.errors.push("You shoud choice a tile")
+      }
       Object.keys(this.selected_tile_events_data).forEach((event_name) => {
         var event = this.selected_tile_events_data[event_name]
+        if (event.selected_module == 0){
+          this.errors.push("You should choice a module for "+event_name+" event.")
+        }
+        if ( event.selected_action == 0){
+          this.errors.push("You should select an action for "+event.selected_module+" module.")
+        }
         var module_action_inputs = event.module_data.actions[event.selected_action].inputs
         Object.keys(module_action_inputs).forEach((item) => {
           var input = module_action_inputs[item]
