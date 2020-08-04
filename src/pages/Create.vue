@@ -99,7 +99,7 @@ export default {
     selectedModuleChange(tile_event){
       console.log("It change")
       var event = dataparser.getEventData(this.selected_tile_events_data,tile_event)
-
+      this.selected_tile_events_data[tile_event].selected_action = 0
       this.selected_tile_events_data[tile_event].module_data = get_module_info(dataparser.getEventModule(event))
       this.$forceUpdate();  // FORCE UPDATE FOR V-IF BECAUSE THEY WHERE NOT UPDATING THEIRSELVES
 
