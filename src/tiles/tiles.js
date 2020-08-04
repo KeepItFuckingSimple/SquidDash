@@ -1,5 +1,6 @@
 import Button from "./Button"
-
+import SwitchTile from './SwitchTile'
 export const tiles = {
-    'Button': Button
+    'Button': Button,
+    'SwitchTile': SwitchTile
 }
