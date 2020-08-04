@@ -22,3 +22,6 @@ new Vue({
 
 
 // c'est moi charlie XD
+// Moi c'est kaporos, enchanté
+
+
