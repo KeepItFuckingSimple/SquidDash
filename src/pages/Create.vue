@@ -1,11 +1,18 @@
 <template>
   <div id="create">
+    <h3 v-for="error in this.errors" v-bind:key="error" style="color: red;">
+        {{ error }}
+    </h3>
+    <br>
 
     <h1>Add a tile</h1>
 
     <input type="text" v-model="tile_name" placeholder="Tile name">
 
-    <br><br>
+  
+    <br>
+
+    <br>
     <!-- Component selector -->
     <select v-model="selected_tile" @change="selectedTileChange"> 
         <option value="0" disabled=true>--Please choose a component--</option>
@@ -34,7 +41,7 @@
           <br><br>
           <!-- Module specified required input, like url for http request -->
           <div class="action_options" v-if="selected_tile_events_data[tile_event].selected_action != 0">
-            <div class="input" :key="input" v-for="input in get_tile_module_action_inputs(tile_event)">
+            <div class="input" :key="input" v-for="input in get_tile_module_action_inputs_list(tile_event)">
                 <input type="text" @input="$forceUpdate()" v-model="selected_tile_events_data[tile_event].action_data[input]"  :name="input" :id="input" :placeholder="input">
             </div>
           </div>
@@ -57,6 +64,7 @@ export default {
   data (){
     return {
       tiles:tiles,
+      tiles_inputs_errors: {},
       available_modules: get_all_modules(),
       content: {
         tiles: []
@@ -64,17 +72,21 @@ export default {
       selected_tile: 0,
       selected_tile_events: [],
       selected_tile_events_data: {},
-      tile_name: ""
+      tile_name: "",
+      errors: []
     }
   },
   methods: {
     get_tile_module_actions: function(tile_event) {
       return Object.keys(this.selected_tile_events_data[tile_event].module_data.actions)
     },
-    get_tile_module_action_inputs: function(tile_event){
+    get_tile_module_actions_inputs: function(tile_event){
+      return this.selected_tile_events_data[tile_event].module_data.actions[this.selected_tile_events_data[tile_event].selected_action].inputs
+    },
+    get_tile_module_action_inputs_list: function(tile_event){
 
       
-      var inputs = this.selected_tile_events_data[tile_event].module_data.actions[this.selected_tile_events_data[tile_event].selected_action].inputs
+      var inputs = this.get_tile_module_actions_inputs(tile_event)
       console.log("Calculated actions")
       return Object.keys(inputs)
     },
@@ -86,7 +98,31 @@ export default {
 
     },
     addTile(){
+      this.errors = []
+      if (this.tile_name.length == 0){
+        this.errors.push("Name should not be blank")
+      }
+      Object.keys(this.selected_tile_events_data).forEach((event_name) => {
+        var event = this.selected_tile_events_data[event_name]
+        var module_action_inputs = event.module_data.actions[event.selected_action].inputs
+        Object.keys(module_action_inputs).forEach((item) => {
+          var input = module_action_inputs[item]
+          console.log(item)
+          if (input.required == undefined || input.required == false){
+            return
+          }
+          else {
+            if (this.selected_tile_events_data[event_name].action_data[item] == undefined){
+              this.errors.push(item+" of "+event_name+" should not be blank")
+            }
+          }
+        })
 
+      })
+      console.log(this.errors)
+      if (this.errors.length >= 1){
+        return
+      }
       var tileContent = {
           type: this.selected_tile,
           data: {
