@@ -15,7 +15,7 @@
     <br>
     <!-- Component selector -->
     <select v-model="selected_tile" @change="selectedTileChange"> 
-        <option value="0" disabled=true>--Please choose a component--</option>
+        <option value="0" disabled=true>--Please choose a tile type--</option>
         <option v-for="tile in tiles" v-bind:key="tile.name" :value="tile.name">{{ tile.name }}</option>
     </select>
     
@@ -34,7 +34,7 @@
 
           <!-- Action of module , exemple get or post for http , etc , like a method -->
           <select v-if="selected_tile_events_data[tile_event].selected_module != 0" @click="$forceUpdate()" v-model="selected_tile_events_data[tile_event].selected_action">
-              <option value="0" disabled=true>--Please choose an variant--</option>
+              <option value="0" disabled=true>--Please choose an action--</option>
               <option v-for="action in get_tile_module_actions(tile_event)" v-bind:key="action" :value="action">{{ action }}</option>
           </select>
           
@@ -58,7 +58,7 @@
 <script>
 import {tiles} from "../tiles/tiles.js"
 import {get_all_modules,get_module_info} from "../modules/modules.js"
-
+import * as dataparser from './utils/data_parsers/creation.js'
 export default {
   name: 'Create',
   data (){
@@ -78,10 +78,15 @@ export default {
   },
   methods: {
     get_tile_module_actions: function(tile_event) {
-      return Object.keys(this.selected_tile_events_data[tile_event].module_data.actions)
+      var event = dataparser.getEventData(this.selected_tile_events_data,tile_event)
+      
+      return Object.keys(dataparser.getEventModuleActions(event))
+
     },
     get_tile_module_actions_inputs: function(tile_event){
-      return this.selected_tile_events_data[tile_event].module_data.actions[this.selected_tile_events_data[tile_event].selected_action].inputs
+      var event = dataparser.getEventData(this.selected_tile_events_data,tile_event)
+
+      return dataparser.getEventActionInputs(event)
     },
     get_tile_module_action_inputs_list: function(tile_event){
 
@@ -91,13 +96,15 @@ export default {
       return Object.keys(inputs)
     },
 
-    selectedModuleChange(action){
+    selectedModuleChange(tile_event){
       console.log("It change")
-      this.selected_tile_events_data[action].module_data = get_module_info(this.selected_tile_events_data[action].selected_module)
+      var event = dataparser.getEventData(this.selected_tile_events_data,tile_event)
+
+      this.selected_tile_events_data[tile_event].module_data = get_module_info(dataparser.getEventModule(event))
       this.$forceUpdate();  // FORCE UPDATE FOR V-IF BECAUSE THEY WHERE NOT UPDATING THEIRSELVES
 
     },
-    addTile(){
+    verifData(){      
       this.errors = []
       if (this.tile_name.length == 0){
         this.errors.push("Name should not be blank")
@@ -106,28 +113,37 @@ export default {
         this.errors.push("You shoud choice a tile")
       }
       Object.keys(this.selected_tile_events_data).forEach((event_name) => {
-        var event = this.selected_tile_events_data[event_name]
+
+        var event = dataparser.getEventData(this.selected_tile_events_data,event_name)
+
         if (event.selected_module == 0){
           this.errors.push("You should choice a module for "+event_name+" event.")
         }
-        if ( event.selected_action == 0){
+        if ( event.selected_action == 0 && event.selected_module != 0 ){ //BECAUSE IF SELECTED_MODULE = 0 , USER CAN'T YET SELECT ACTION
           this.errors.push("You should select an action for "+event.selected_module+" module.")
         }
-        var module_action_inputs = event.module_data.actions[event.selected_action].inputs
-        Object.keys(module_action_inputs).forEach((item) => {
-          var input = module_action_inputs[item]
-          console.log(item)
+
+        var module_action_inputs = dataparser.getEventActionInputs(event)
+
+        Object.keys(module_action_inputs).forEach((input_name) => {
+
+          var input = module_action_inputs[input_name]
+
           if (input.required == undefined || input.required == false){
             return
           }
           else {
-            if (this.selected_tile_events_data[event_name].action_data[item] == undefined){
-              this.errors.push(item+" of "+event_name+" should not be blank")
+            if (dataparser.getEventActionInputData(event,input_name) == undefined){
+              this.errors.push(input_name+" of "+event_name+" should not be blank")
             }
           }
         })
 
       })
+
+    },
+    addTile(){
+      this.verifData();
       console.log(this.errors)
       if (this.errors.length >= 1){
         return
@@ -144,12 +160,12 @@ export default {
       this.$router.push('/')
     },
     selectedTileChange(){
-      console.log("Tile changed")
       this.selected_tile_events = (this.tiles[this.selected_tile].events)
+
       this.selected_tile_events_data = {}
-      console.log(this.selected_tile_events)
+
       this.selected_tile_events.forEach((item) => {
-        console.log(item)
+        
         this.selected_tile_events_data[item] = {selected_module: 0,action_data: {},selected_action: 0}
 
       })
