@@ -18,3 +18,7 @@ new Vue({
   render: h => h(App),
   router
 }).$mount('#app');
+
+
+
+// c'est moi charlie XD
