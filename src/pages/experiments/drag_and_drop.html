@@ -138,15 +138,36 @@
         <div class="my-custom-content">
           Yippe
         </div>
-        <!-- Safe zone ends -->
+        <!-- https://github.com/haltu/muuri#getting-started -->
       </div>
     </div>
 
   </div>
 
   <script>
+    var largeur_fenetre = window.innerWidth;
+    var hauteur_fenetre = window.innerHeight;
+    console.log(largeur_fenetre)
+    console.log(hauteur_fenetre)
+
     Muuri.defaultOptions.dragEnabled=true;
+
     var grid = new Muuri('.grid');
+    function resize() {
+      var largeur_fenetre = window.innerWidth;
+      var hauteur_fenetre = window.innerHeight;
+      console.log(largeur_fenetre)
+      console.log(hauteur_fenetre)
+      var g =document.getElementsByClassName("grid");
+      g.width=largeur_fenetre+"px";
+      console.log(g);
+    }
+
+    var g =document.getElementsByClassName("grid");
+    console.log(g);
+    window.onresize = resize;
   </script>
+
+
 </html>
 
