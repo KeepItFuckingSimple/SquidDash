@@ -19,7 +19,6 @@ export default {
 
 <style lang="scss">
 
-
 .btn{
   color: white;
   box-sizing: content-box;

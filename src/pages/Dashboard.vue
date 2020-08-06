@@ -15,7 +15,10 @@
     <button @click=goSettings>Settings</button>
     <bottombar @add_tile="addComponent()"></bottombar>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8aeef46c03f21aa7ec8519b7a1d87b595adb4b3f
   </div>
 </template>
 
@@ -23,7 +26,10 @@
 import {tiles} from "../tiles/tiles.js"
 import DemoComponent from "./components/demo.vue"
 import Bottombar from "./components/bottom_bar.vue"
+<<<<<<< HEAD
 import Sidebar from "./components/left_bar.vue"
+=======
+>>>>>>> 8aeef46c03f21aa7ec8519b7a1d87b595adb4b3f
 export default {
   name: 'Dashboard',
   data (){
