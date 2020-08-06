@@ -59,8 +59,9 @@
               </select>
               <br><br>
               <div class="preset_fields" v-if="selected_tile_events_data[tile_event].selected_preset != 0">
+                <h5>Preset data : </h5>
                 <div class="input" :key="input" v-for="input in selected_tile_events_data[tile_event].selected_preset_fields">
-                    <input type="text" @input="$forceUpdate()" v-model="selected_tile_events_data[tile_event].preset_data[input]"  :name="input" :id="input" :placeholder="input">
+                    <input type="text" @input="$forceUpdate()" v-model="selected_tile_events_data[tile_event].preset_data[input]"  :name="input" :id="input" :placeholder="input"><br><br>
                 </div>
               </div>
 
@@ -137,35 +138,47 @@ export default {
       Object.keys(this.selected_tile_events_data).forEach((event_name) => {
 
         var event = dataparser.getEventData(this.selected_tile_events_data,event_name)
+        if (event.use_preset){
 
-        if (event.selected_module == 0){
-          this.errors.push("You should choice a module for "+event_name+" event.")
-        }
-        if ( event.selected_action == 0 && event.selected_module != 0 ){ //BECAUSE IF SELECTED_MODULE = 0 , USER CAN'T YET SELECT ACTION
-          this.errors.push("You should select an action for "+event.selected_module+" module.")
-        }
-
-        var module_action_inputs = dataparser.getEventActionInputs(event)
-
-        Object.keys(module_action_inputs).forEach((input_name) => {
-
-          var input = module_action_inputs[input_name]
-
-          if (input.required == undefined || input.required == false){
-            return
+          console.log("Pass because preset")
+          if (event.selected_preset == 0 ){
+            this.errors.push("You should choice a preset for "+event_name)
           }
-          else {
-            if (dataparser.getEventActionInputData(event,input_name) == undefined){
-              this.errors.push(input_name+" of "+event_name+" should not be blank")
+          event.selected_preset_fields.forEach((field) => {
+            if (event.preset_data[field] == undefined){
+              this.errors.push("You should complete "+field+" in "+event_name)
             }
+          })
+        }else{
+          if (event.selected_module == 0){
+            this.errors.push("You should choice a module for "+event_name+" event.")
           }
-        })
+          if ( event.selected_action == 0 && event.selected_module != 0 ){ //BECAUSE IF SELECTED_MODULE = 0 , USER CAN'T YET SELECT ACTION
+            this.errors.push("You should select an action for "+event.selected_module+" module.")
+          }
+
+          var module_action_inputs = dataparser.getEventActionInputs(event)
+
+          Object.keys(module_action_inputs).forEach((input_name) => {
+
+            var input = module_action_inputs[input_name]
+
+            if (input.required == undefined || input.required == false){
+              return
+            }
+            else {
+              if (dataparser.getEventActionInputData(event,input_name) == undefined){
+                this.errors.push(input_name+" of "+event_name+" should not be blank")
+              }
+            }
+          })
+        }
 
       })
 
     },
     addTile(){
-      //this.verifData();
+      this.verifData();
       console.log(this.errors)
       if (this.errors.length >= 1){
         return
