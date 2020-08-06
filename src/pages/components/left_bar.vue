@@ -35,7 +35,6 @@ export default {
 
 .invisible{
     visibility: hidden;
-    transition: visibility 0s, opacity 0.5s linear;
 
 
 }
