@@ -10,7 +10,16 @@ export default {
   data(){
     return {
       content: {
-        "tiles": []
+        "tiles": [],
+        "presets": [
+          {
+            name: "Request Catcher",
+            selected_module: "http",
+            data:{
+              url: "https://${workspace}.requestcatcher.com/${data}"
+            }          
+          }
+        ]
       }
     }
   },

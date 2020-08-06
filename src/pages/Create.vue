@@ -23,30 +23,53 @@
 
     <section v-for="tile_event in selected_tile_events" v-bind:key="tile_event" class="tile_event_config">
           <h1>Config for: {{tile_event}}</h1>
-        <!-- Module selector ( http , mqtt , etc ) --> 
-          <select v-if="selected_tile != 0" v-model="selected_tile_events_data[tile_event].selected_module" @change="selectedModuleChange(tile_event)">
-              <option value="0" disabled=true>--Please choose a module--</option>
-              <option v-for="module in available_modules" v-bind:key="module" :value="module">{{ module }}</option>
-          </select>
-          
+          <input type="checkbox" :id="tile_event+'_preset'" v-model="selected_tile_events_data[tile_event].use_preset"  @change="$forceUpdate()">
+          <label>Use preset</label>
           <br><br>
-          
 
-          <!-- Action of module , exemple get or post for http , etc , like a method -->
-          <select v-if="selected_tile_events_data[tile_event].selected_module != 0" @click="$forceUpdate()" v-model="selected_tile_events_data[tile_event].selected_action">
-              <option value="0" disabled=true>--Please choose an action--</option>
-              <option v-for="action in get_tile_module_actions(tile_event)" v-bind:key="action" :value="action">{{ action }}</option>
-          </select>
-          
-          <br><br>
-          <!-- Module specified required input, like url for http request -->
-          <div class="action_options" v-if="selected_tile_events_data[tile_event].selected_action != 0">
-            <div class="input" :key="input" v-for="input in get_tile_module_action_inputs_list(tile_event)">
-                <input type="text" @input="$forceUpdate()" v-model="selected_tile_events_data[tile_event].action_data[input]"  :name="input" :id="input" :placeholder="input">
-            </div>
-          </div>
+          <section class="no_preset" v-if="!selected_tile_events_data[tile_event].use_preset">
+                    <!-- Module selector ( http , mqtt , etc ) --> 
+              <select v-if="selected_tile != 0" v-model="selected_tile_events_data[tile_event].selected_module" @change="selectedModuleChange(tile_event)">
+                  <option value="0" disabled=true>--Please choose a module--</option>
+                  <option v-for="module in available_modules" v-bind:key="module" :value="module">{{ module }}</option>
+              </select>
+              
+              <br><br>
+              
+
+              <!-- Action of module , exemple get or post for http , etc , like a method -->
+              <select v-if="selected_tile_events_data[tile_event].selected_module != 0" @click="$forceUpdate()" v-model="selected_tile_events_data[tile_event].selected_action">
+                  <option value="0" disabled=true>--Please choose an action--</option>
+                  <option v-for="action in get_tile_module_actions(tile_event)" v-bind:key="action" :value="action">{{ action }}</option>
+              </select>
+              
+              <br><br>
+              <!-- Module specified required input, like url for http request -->
+              <div class="action_options" v-if="selected_tile_events_data[tile_event].selected_action != 0">
+                <div class="input" :key="input" v-for="input in get_tile_module_action_inputs_list(tile_event)">
+                    <input type="text" @input="$forceUpdate()" v-model="selected_tile_events_data[tile_event].action_data[input]"  :name="input" :id="input" :placeholder="input">
+                </div>
+              </div>
+          </section>
+
+          <section class="with_preset" v-if="selected_tile_events_data[tile_event].use_preset">
+              <select v-model="selected_tile_events_data[tile_event].selected_preset" @change="presetChanged(tile_event)">
+                  <option value="0" disabled>--Please choose a preset--</option>
+                  <option v-for="(preset, index) in content.presets" v-bind:key="preset.name" :value="index + 1">{{ preset.name }}</option>
+              </select>
+              <br><br>
+              <div class="preset_fields" v-if="selected_tile_events_data[tile_event].selected_preset != 0">
+                <h5>Preset data : </h5>
+                <div class="input" :key="input" v-for="input in selected_tile_events_data[tile_event].selected_preset_fields">
+                    <input type="text" @input="$forceUpdate()" v-model="selected_tile_events_data[tile_event].preset_data[input]"  :name="input" :id="input" :placeholder="input"><br><br>
+                </div>
+              </div>
+
+              <br>
+          </section>
+
     </section>
-
+    <br>
 
 
     <button @click="addTile()">Create ! </button>
@@ -59,6 +82,7 @@
 import {tiles} from "../tiles/tiles.js"
 import {get_all_modules,get_module_info} from "../modules/modules.js"
 import * as dataparser from './utils/data_parsers/creation.js'
+import * as storage from 'local-storage'
 export default {
   name: 'Create',
   data (){
@@ -66,14 +90,13 @@ export default {
       tiles:tiles,
       tiles_inputs_errors: {},
       available_modules: get_all_modules(),
-      content: {
-        tiles: []
-      },
+      content: storage.get("content"),
       selected_tile: 0,
       selected_tile_events: [],
       selected_tile_events_data: {},
       tile_name: "",
-      errors: []
+      errors: [],
+      regex: /\$\{(.*?)\}/
     }
   },
   methods: {
@@ -115,29 +138,41 @@ export default {
       Object.keys(this.selected_tile_events_data).forEach((event_name) => {
 
         var event = dataparser.getEventData(this.selected_tile_events_data,event_name)
+        if (event.use_preset){
 
-        if (event.selected_module == 0){
-          this.errors.push("You should choice a module for "+event_name+" event.")
-        }
-        if ( event.selected_action == 0 && event.selected_module != 0 ){ //BECAUSE IF SELECTED_MODULE = 0 , USER CAN'T YET SELECT ACTION
-          this.errors.push("You should select an action for "+event.selected_module+" module.")
-        }
-
-        var module_action_inputs = dataparser.getEventActionInputs(event)
-
-        Object.keys(module_action_inputs).forEach((input_name) => {
-
-          var input = module_action_inputs[input_name]
-
-          if (input.required == undefined || input.required == false){
-            return
+          console.log("Pass because preset")
+          if (event.selected_preset == 0 ){
+            this.errors.push("You should choice a preset for "+event_name)
           }
-          else {
-            if (dataparser.getEventActionInputData(event,input_name) == undefined){
-              this.errors.push(input_name+" of "+event_name+" should not be blank")
+          event.selected_preset_fields.forEach((field) => {
+            if (event.preset_data[field] == undefined){
+              this.errors.push("You should complete "+field+" in "+event_name)
             }
+          })
+        }else{
+          if (event.selected_module == 0){
+            this.errors.push("You should choice a module for "+event_name+" event.")
           }
-        })
+          if ( event.selected_action == 0 && event.selected_module != 0 ){ //BECAUSE IF SELECTED_MODULE = 0 , USER CAN'T YET SELECT ACTION
+            this.errors.push("You should select an action for "+event.selected_module+" module.")
+          }
+
+          var module_action_inputs = dataparser.getEventActionInputs(event)
+
+          Object.keys(module_action_inputs).forEach((input_name) => {
+
+            var input = module_action_inputs[input_name]
+
+            if (input.required == undefined || input.required == false){
+              return
+            }
+            else {
+              if (dataparser.getEventActionInputData(event,input_name) == undefined){
+                this.errors.push(input_name+" of "+event_name+" should not be blank")
+              }
+            }
+          })
+        }
 
       })
 
@@ -166,9 +201,29 @@ export default {
 
       this.selected_tile_events.forEach((item) => {
         
-        this.selected_tile_events_data[item] = {selected_module: 0,action_data: {},selected_action: 0}
+        this.selected_tile_events_data[item] = {selected_module: 0,action_data: {},selected_action: 0, use_preset: false, preset_data:{}, selected_preset: 0, selected_preset_fields: []}
 
       })
+    },
+    presetChanged(tile_event){
+      console.log("Changed preset")
+      var preset = this.content.presets[this.selected_tile_events_data[tile_event].selected_preset - 1]
+
+      for (var key in preset.data){
+          var analyze = [...preset.data[key].matchAll(/\$\{(.*?)\}/g)]
+          console.log(analyze)
+          if (analyze.length > 0 ){
+            analyze.forEach((tag) => {
+                this.selected_tile_events_data[tile_event].selected_preset_fields.push(tag[1])
+
+            })
+
+          }
+
+      }
+      this.$forceUpdate()
+
+
     }
   }
 }
