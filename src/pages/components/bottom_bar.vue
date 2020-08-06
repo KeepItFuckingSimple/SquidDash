@@ -1,11 +1,13 @@
 <template>
-
+<div>
 <div class="app-bar-bottom">
         <div class="btn" @click="$emit('add_tile')">
             <div class="btn__content">
                 <ion-icon name="add-outline"></ion-icon>
             </div>
       </div>
+
+</div>
 </div>
 </template>
 
@@ -16,6 +18,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 
 .btn{
   color: white;
